@@ -1,3 +1,5 @@
+@Library('python')_
+
 pipeline {
     agent {
         label 'agent-0'
@@ -8,15 +10,35 @@ pipeline {
         jdk 'java-11'
     }
 
+    environment{
+        dockerUserName = credentials("docker-user")
+        dockerPassWord = credentials("docker-pass")
+    }
+
     stages {
         stage('Build') { 
             steps {
-                sh 'mvn package install'
+                script{
+                    def mavenIT = new edu.iti.maven()
+                    mavenIT.mvn("package install")
+                }
             }
         }
-        stage('Test') { 
+        stage('Docker Build') { 
             steps {
-                sh 'mvn test'
+                script{
+                    def dockerIT = new edu.iti.docker()
+                    dockerIT.build("hassaneid/it", "${BUILD_NUMBER}")
+                }
+            }
+        }
+        stage('Docker push') { 
+            steps {
+                script{
+                    def dockerIT = new edu.iti.docker()
+                    dockerIT.login("${dockerUserName}", "${dockerPassWord}")
+                    dockerIT.push("hassaneid/it", "${BUILD_NUMBER}")
+                }
             }
         }
     }
