@@ -8,8 +8,8 @@ node("agent-0"){
     
     stage("Build"){
         env.PATH = "${maven}/bin:${env.PATH}"
-        def javaVersion = sh(script: 'java -version', returnStdout: true).trim()
-        def javaVersionJdk = sh(script: "echo $javaVersion | head -1 | cut -d ' ' -f 2 ", returnStdout: true).trim()
+        sh "java -version > java.version"
+        def javaVersionJdk = sh(script: "cat java.version | head -1 | cut -d ' ' -f 2 ", returnStdout: true).trim()
         // sh "mvn package install"
     }
     // stage("Test"){
