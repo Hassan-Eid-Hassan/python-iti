@@ -2,16 +2,17 @@ node("agent-0"){
     def maven = tool name: 'mvn-3-5-2', type: 'maven'
     def jdk = tool name: 'java-11', type: 'jdk'
 
-    stage("Check SCM"){
-        git branch: 'main', url: 'https://github.com/Hassan-Eid-Hassan/python-iti.git'
-    }
+    // stage("Check SCM"){
+    //     git branch: 'main', url: 'https://github.com/Hassan-Eid-Hassan/python-iti.git'
+    // }
     
     stage("Build"){
         env.PATH = "${maven}/bin:${env.PATH}"
-        sh "java -version"
-        sh "mvn package install"
+        def javaVersion = sh(script: 'java -version', returnStdout: true).trim()
+        def javaVersionJdk = sh(script: "echo $javaVersion | head -1 | cut -d " " -f 2 ", returnStdout: true).trim()
+        // sh "mvn package install"
     }
-    stage("Test"){
-        sh "mvn test"
-    }
+    // stage("Test"){
+    //     sh "mvn test"
+    // }
 }
